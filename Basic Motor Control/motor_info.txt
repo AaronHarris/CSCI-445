@@ -1,9 +1,9 @@
 left motor: 0
-stop: 123
-high: 133
-low: 115
+stop: 151
+high: 163
+low: 141
 ---------------
 right motor: 1
-stop: 151
-high: 161
-low: 141
+stop: 152
+high: 162
+low: 142
