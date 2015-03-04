@@ -1,0 +1,16 @@
+ssh -X pi@192.168.1.168
+batman123
+
+sudo ~/PiBits/ServoBlaster/user/servod --p1pins=7,11
+
+sudo ~/ServoMotor/ServoMotor
+
+sudo make
+
+sudo killall servod
+
+---------------------------
+
+sudo mv bettersonarpid.cpp servomotor.cpp
+
+scp bettersonarpid.cpp pi@192.168.1.168:~/ServoMotor
