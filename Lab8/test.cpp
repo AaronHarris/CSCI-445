@@ -57,17 +57,7 @@ void setFalse(bool direction[]) {
 	}
 }
 
-void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot) {
-
-	for(int i = 0; i < 4; ++i) {
-		turnLeft(fp);
-		SonarSensing(particles, sonar_orientation,  update_magnitude, update_variance, image3, robot); 
-	} //for
-
-	//turnToTarget(robot, x, y);
-	
-
-} //localization()
+void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot);
 
 /*void turnToTarget(cv::Point& robot, int x, int y) {
 	if(x == 0) {
@@ -647,3 +637,15 @@ void turnBackward(FILE *fp)
 	fflush(fp);
 	delay(100); 
 }
+
+void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot) {
+
+	for(int i = 0; i < 4; ++i) {
+		turnLeft(fp);
+		SonarSensing(particles, sonar_orientation,  update_magnitude, update_variance, image3, robot); 
+	} //for
+
+	//turnToTarget(robot, x, y);
+	
+
+} //localization()
