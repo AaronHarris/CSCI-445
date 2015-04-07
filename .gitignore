@@ -8,6 +8,11 @@
 *.gch
 *.pch
 
+# CMake libraries
+CMakeFiles
+cmake_install.cmake
+CMakeCache.txt
+
 # Libraries
 *.lib
 *.a
