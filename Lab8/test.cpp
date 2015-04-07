@@ -57,6 +57,75 @@ void setFalse(bool direction[]) {
 	}
 }
 
+void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot) {
+
+	for(int i = 0; i < 4; ++i) {
+		turnLeft(fp);
+		SonarSensing(particles, sonar_orientation,  update_magnitude, update_variance, image3, robot); 
+	} //for
+
+	//turnToTarget(robot, x, y);
+	
+
+} //localization()
+
+/*void turnToTarget(cv::Point& robot, int x, int y) {
+	if(x == 0) {
+		if(y > 0) {
+			rotateToNorth()
+		}
+		else if(y < 0) {
+			rotateToSouth()
+		}
+		else 
+			//do nothing
+	}
+	else if(y == 0) {
+		if(x > 0) {
+			rotateToEast()
+		}
+		else if(x < 0) {
+			rotateToWest()
+		}
+		else 
+			//do nothing
+	}
+} //turnToTarget()
+
+void moveToTarget(FILE *fp, cv::Point& robot, int x, int y) {
+
+	if(robot.x == x && robot.y == y) {
+		printf("You made it!\n\n");
+		exit(0);
+	}
+	else {
+		wallFollow(FILE *fp, robot, x, y);
+	} //else
+
+} //MoveToTarget()
+
+
+void wallFollow(FILE *fp, cv::Point& robot, int x, int y) {
+
+	Rotates Sonar towards closest wall //uses info from Localize()
+
+	//move Robot With P Control
+	if(distance > 50 after 3 readings) {
+		if(Sonar is facing left) {
+			rotateSonar(-90)
+		} //if
+		else if(Sonar is facing right) {
+			rotateSonar(90)
+		} //else if
+	} //if
+	else if(distance < 30) {
+		rotate Sonar towards target
+		while(robot.x != x && robot.y != y) {
+			moveForward(fp);
+		} //while
+	} //else if
+} //WallFollow()*/
+
 bool checkforWall(cv::Mat image3,cv::Point xy);
 
 void printDirection(int direction) {
@@ -85,7 +154,7 @@ int getCM_simulator(cv::Mat& image3,int orientation,cv::Point point ){
 
 int getCM() {
 #ifdef SIMULATION
-	puts("simulation mode, no access to sonar, use getCM_simulator isntead");
+	puts("simulation mode, no access to sonar, use getCM_simulator instead");
 	return 0;
 #else
 
@@ -159,6 +228,14 @@ int main( )
 	int update_magnitude=5;
 	int update_variance=3;
 	int update_angle;
+
+	int userX = -1;
+	int userY = -1;
+	printf("Give me some points (x y): ");
+	scanf("%d %d", &userX, &userY);
+
+	localization(userX, userY, fp, particles, sonar_relative_orientation,  update_magnitude, update_variance, image3, robot);
+	//moveToTarget(fp, robot, userX, userY);
 
 	while (!exit){ //
 		printf("Current robot position:  X-%d, Y-%d\n", robot.x,robot.y);
