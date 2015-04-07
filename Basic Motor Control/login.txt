@@ -14,3 +14,17 @@ sudo killall servod
 sudo mv bettersonarpid.cpp servomotor.cpp
 
 scp bettersonarpid.cpp pi@192.168.1.168:~/ServoMotor
+
+---------------------------
+
+RPi
+
+192.168.1.168
+
+port = 5901
+
+pw = batman123
+
+
+
+	
