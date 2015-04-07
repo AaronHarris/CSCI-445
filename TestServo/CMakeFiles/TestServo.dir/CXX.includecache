@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/pi/TestServo/testservo.cpp
+stdio.h
+-
+stdlib.h
+-
+wiringPi.h
+/home/pi/TestServo/wiringPi.h
+
