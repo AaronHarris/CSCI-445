@@ -642,7 +642,7 @@ void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, doub
 
 	for(int i = 0; i < 4; ++i) {
 		turnLeft(fp);
-		SonarSensing(particles, sonar_orientation,  update_magnitude, update_variance, image3, robot); 
+		SonarSensing(particles, orientation,  magnitude, variance, image3, robot); 
 	} //for
 
 	//turnToTarget(robot, x, y);
