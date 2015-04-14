@@ -19,12 +19,17 @@ scp bettersonarpid.cpp pi@192.168.1.168:~/ServoMotor
 
 RPi
 
+Wireless VNC IP
+
 192.168.1.168
 
 port = 5901
 
 pw = batman123
 
+--------------
+sudo date -s "Mon Apr 13, 2015 18:45"
 
+cat /etc/timezone
 
 	

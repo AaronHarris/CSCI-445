@@ -7,3 +7,9 @@ right motor: 1
 stop: 152
 high: 162
 low: 142
+---------------
+sonar motor: 2
+(max - 250)
+left: 215
+forward: 125
+right: 50 (min)
