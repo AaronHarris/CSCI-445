@@ -51,49 +51,78 @@ void turnLeft(FILE *fp);
 void turnRight(FILE *fp);
 void turnBackward(FILE *fp);
 
+int getCM();
+
 void setFalse(bool direction[]) {
 	for(int i = 0; i < 4; ++i) {
 		direction[4] = false;
 	}
 }
 
-void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot, /**/ std::vector<cv::Point> edge, std::vector<cv::Point> rocket, std::vector<cv::Point> dock, cv::Point arcLoad);
+void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot, int sonar_relative_orientation, /**/ std::vector<cv::Point> edge, std::vector<cv::Point> rocket, std::vector<cv::Point> dock, cv::Point arcLoad);
+
 
 void turnToTarget(cv::Point& robot, int x, int y);
 
-/*void moveToTarget(FILE *fp, cv::Point& robot, int x, int y) {
+void drive(FILE *fp, int delay_num, int left, int right) {
+	fprintf(fp, "0=%d\n", left); //Clockwise //LEFT WHEEL
+	fprintf(fp, "1=%d\n", right); //Clockwise
+	fflush(fp);
+	delay(delay_num);
+}
 
-	if(robot.x == x && robot.y == y) {
-		printf("You made it!\n\n");
-		exit(0);
-	}
-	else {
-		//wallFollow(fp, robot, x, y);
-	} //else
+int wallFollow(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot, int sonar_relative_orientation, /**/ std::vector<cv::Point> edge, std::vector<cv::Point> rocket, std::vector<cv::Point> dock, cv::Point arcLoad, int targetDist, bool isLeft) {
 
-} //MoveToTarget()
+	int left = 151;
+	int right = 152;
 
+	double err, lasterr, sumerr, output, driveleft, driveright;
+	double kp = .1;
 
-void wallFollow(FILE *fp, cv::Point& robot, int x, int y) {
-
+	double commandedPos = targetDist;
+		
 	//Rotates Sonar towards closest wall //uses info from Localize()
-
+	int rlfactor = 1;
+	if (isLeft) {
+		// do nothing
+	} else { //robot following wall on the right
+		rlfactor = -1;
+	}
 	//move Robot With P Control
-	if(distance > 50 after 3 readings) {
-		if(Sonar is facing left) {
-			rotateSonar(-90)
-		} //if
-		else if(Sonar is facing right) {
-			rotateSonar(90)
-		} //else if
-	} //if
-	else if(distance < 30) {
-		rotate Sonar towards target
-		while(robot.x != x && robot.y != y) {
-			moveForward(fp);
-		} //while
-	} //else if
-} //WallFollow()*/
+	int dist = getCM();
+		if (dist < 50) {
+			if(robot.x == x && robot.y == y) {
+				printf("*****************  You made it!\n");
+			} //if
+			else {
+				err = commandedPos - dist;
+				output = kp*err;
+				driveleft = min(max(160+ output*rlfactor,left-20.0), left+20.0);
+				driveright = min(max(145+ output*rlfactor,right-20.0), right+20.0);
+
+				printf("%f\t%f\t%f\t%f\t\n", err, output,driveleft,driveright);
+				drive(fp, 200, driveleft, driveright);
+
+				// if(distance > 50 after 3 readings) {
+				// 	if(Sonar is facing left) {
+				// 		rotateSonar(-90)
+				// 	} //if
+				// 	else if(Sonar is facing right) {
+				// 		rotateSonar(90)
+				// 	} //else if
+				// } //if
+				// else if(distance < 30) {
+				// 	rotate Sonar towards target
+				// 	while(robot.x != x && robot.y != y) {
+				// 		moveForward(fp);
+				// 	} //while
+				// } //else if
+			} //else
+		} // if dist < 50	
+	return dist;
+
+
+} //WallFollow()
 
 bool checkforWall(cv::Mat image3,cv::Point xy);
 
@@ -203,7 +232,51 @@ int main( )
 	printf("Give me some points (x y): ");
 	scanf("%d %d", &userX, &userY);
 
-	localization(userX, userY, fp, particles, sonar_relative_orientation,  update_magnitude, update_variance, image3, robot, /**/ edge, rocket, dock, arcLoad);
+	localization(userX, userY, fp, particles, sonar_relative_orientation,  update_magnitude, update_variance, image3, robot, sonar_relative_orientation,/**/ edge, rocket, dock, arcLoad);
+
+
+	//* Follow wall on left
+	rotate_Sonar(fp, -75);
+	int counts = 0;
+	int dist;
+	while (counts < 1) {
+		dist = wallFollow(userX, userY, fp, particles, sonar_relative_orientation,  update_magnitude, update_variance, image3, robot, sonar_relative_orientation,/**/ edge, rocket, dock, arcLoad, 25, true);		
+		if (dist > 50) counts++;
+	}
+
+	//* Follow wall on the right
+	rotate_Sonar(fp, 75);
+	counts = 0;
+	while (counts < 1) {
+		dist = wallFollow(userX, userY, fp, particles, sonar_relative_orientation,  update_magnitude, update_variance, image3, robot, sonar_relative_orientation,/**/ edge, rocket, dock, arcLoad, 25, false);		
+		if (dist > 50) counts++;
+	}
+	//* Follow wall on the left
+	rotate_Sonar(fp, -75);
+	counts = 0;
+	while (counts < 2) {
+		dist = wallFollow(userX, userY, fp, particles, sonar_relative_orientation,  update_magnitude, update_variance, image3, robot, sonar_relative_orientation,/**/ edge, rocket, dock, arcLoad, 25, true);		
+		counts++;
+	}
+	// aproach
+	rotate_Sonar(fp, 0);
+	while (getCM() > 20){
+		drive(fp, 200, 160, 145);
+	}
+	drive(fp, 500, 151, 152);
+
+
+	
+	/*while(1) {
+		if(robot.x == userX && robot.y == userY) {
+			printf("*****************  You made it!\n");
+		} //if
+		else {
+			
+		} //else
+		
+	}*/
+
 	//moveToTarget(fp, robot, userX, userY);
 
 	while (!exit){ //
@@ -618,7 +691,7 @@ void turnBackward(FILE *fp)
 	delay(300); 
 }
 
-void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot, /**/ std::vector<cv::Point> edge, std::vector<cv::Point> rocket, std::vector<cv::Point> dock, cv::Point arcLoad) {
+void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, double orientation, double magnitude, double variance,cv::Mat& image3,cv::Point& robot, int sonar_relative_orientation,/**/ std::vector<cv::Point> edge, std::vector<cv::Point> rocket, std::vector<cv::Point> dock, cv::Point arcLoad) {
 		rotate_Sonar(fp, -90);
 		drawMap(image3, edge, rocket, dock, arcLoad);
 		SonarSensing(particles, orientation,  magnitude, variance, image3, robot); 
@@ -641,9 +714,9 @@ void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, doub
 		delay(1000);
 
 		turnRight(fp);
-		drawMap(image3, edge, rocket, dock, arcLoad);
+		/*drawMap(image3, edge, rocket, dock, arcLoad);
 		SonarSensing(particles, orientation,  magnitude, variance, image3, robot); 
-		cv::imshow("Display",image3);
+		cv::imshow("Display",image3);*/
 		cv::waitKey(30);
 		delay(1000);
 
@@ -657,13 +730,18 @@ void localization(int x, int y, FILE *fp, std::vector<Particle>& particles, doub
 		//orientation
 		turnLeft(fp);
 		rotate_Sonar(fp, 0);
-		drawMap(image3, edge, rocket, dock, arcLoad);
-		cv::imshow("Display",image3);
-		cv::waitKey(30);
 		delay(1000);
+
+		drawMap(image3, edge, rocket, dock, arcLoad); // draw map into window
+		cv::circle(image3, robot, 5, cv::Scalar(145,255,0),10, 8, 0);     //draw robot location                
+		drawParticles(image3, particles); 
+		drawOrientation(image3,orientation,sonar_relative_orientation,robot);
 
 
 	//turnToTarget(robot, x, y);
+
+		cv::imshow("Display",image3);
+		cv::waitKey(30);
 	
 
 } //localization()
